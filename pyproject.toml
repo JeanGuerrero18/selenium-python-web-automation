@@ -1,0 +1,20 @@
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+# -n 4: cuatro workers en paralelo (pytest-xdist); usa -n 0 para ejecutar en serie.
+addopts = "-ra --strict-markers -n 4 --html=reports/report.html --self-contained-html"
+markers = [
+    "smoke: critical path checks",
+    "regression: full regression set",
+]
+# Los logs INFO capturados (pasos de página) se muestran por test en el reporte HTML.
+log_level = "INFO"
+log_format = "%(asctime)s.%(msecs)03d %(levelname)-5s %(name)s - %(message)s"
+log_date_format = "%H:%M:%S"
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "PT", "N"]
