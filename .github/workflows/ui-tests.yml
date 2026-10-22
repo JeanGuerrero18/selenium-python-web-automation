@@ -45,6 +45,17 @@ jobs:
 
       - run: pip install -r requirements.txt
 
+      # La imagen trae dos perfiles de AppArmor (msedge y microsoft-edge-stable) para el mismo binario
+      # de Edge. El conflicto lo deja sin perfil, no puede crear user namespaces y, como msedge-sandbox
+      # tampoco es setuid, Edge aborta al arrancar ("Chrome instance exited"). Se descarga el duplicado:
+      # el perfil msedge, idéntico, sigue aplicándose y Edge conserva su sandbox completo.
+      - name: Remove duplicate Edge AppArmor profile
+        if: matrix.browser == 'edge'
+        run: |
+          if [ -f /etc/apparmor.d/microsoft-edge-stable ]; then
+            sudo apparmor_parser -R /etc/apparmor.d/microsoft-edge-stable
+          fi
+
       # Chrome, Firefox y Edge vienen preinstalados en ubuntu-latest;
       # Selenium Manager descarga los drivers correspondientes en tiempo de ejecución.
       # Los inputs pasan por variables de entorno, nunca interpolados en el script (evita inyección de shell).
